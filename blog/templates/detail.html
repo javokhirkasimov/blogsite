@@ -1,0 +1,244 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+<section class="s-content s-content--single">
+    <div class="row">
+        <div class="column large-12">
+
+            <article class="s-post entry format-standard">
+
+                <div class="s-content__media">
+                    <div class="s-content__post-thumb">
+                        <img src="{{ infos.image.url }}"
+                             style="display: block; margin-left: auto; margin-right: auto; width: 50%;" alt="">
+                    </div>
+                </div> <!-- end s-content__media -->
+
+                <div class="s-content__primary">
+                    <h2 class="s-content__title s-content__title--post">{{ infos.title }}</h2>
+
+                    <ul class="s-content__post-meta">
+                        <li class="date">{{ infos.created_at }}</li>
+                        {% for c in all_categories %}
+                        {% if c == infos.category %}
+                        <li class="cat"><a href="{% url 'category' c.slug %}">{{ c }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+
+                    </ul>
+                    <h1 class="s-content__title s-content__title--post">Author: {{ infos.user }}</h1>
+                    <p class="lead">{{ infos.description }}</p>
+                    {% for h in infos.hashtags_set.all %}
+                    <a href="{% url 'hashtag' h.slug %}">#{{h.name}}</a>
+                    {% endfor %}
+                    {% for images in infos.picturesfromtheblog_set.all %}
+                    <div class="s-content__media">
+                        <div class="s-content__post-thumb">
+                            <img src="{{ images.image.url }}"
+                                 style="display: block; margin-left: auto; margin-right: auto; width: 50%;" alt="">
+                        </div>
+                    </div> <!-- end s-content__media -->
+                    {% endfor %}
+                    <hr>
+                </div> <!-- end s-content__primary -->
+                {% if request.user.is_authenticated and infos.user == request.user %}
+                <section class="s-pageheader">
+                    <div class="row current-cat">
+                        <div class="column">
+                            <a href="{% url 'edit_post' infos.slug %}" type="button" class="btn btn-default">Refactor🖊️</a>
+                        </div>
+                    </div>
+                </section>
+                {% endif %}
+            </article>
+
+
+        </div> <!-- end column -->
+    </div> <!-- end row -->
+
+
+    <!-- comments
+    ================================================== -->
+    <div class="comments-wrap">
+
+        <div id="comments" class="row">
+            <div class="column">
+                <h3>{{ comments | length }} Comments</h3>
+                {% if not comments %}
+                    No Comments Yet...
+                {% else %}
+                    {% for comment in comments %}
+                    
+                        <!-- START commentlist -->
+                        <ol class="commentlist">
+
+                            <li class="depth-1 comment">
+                                {% if comment.reply %}    
+                                <div class="comment__content">            
+                                    <div class="comment__info">
+                                        <div class="comment__author">{{ comment.name }}</div>
+                                        <div class="comment__meta">
+                                            <div class="comment__time">{{ comment.date_added }}</div>
+                                            <div class="comment__reply">
+                                                <a class="comment-reply-link" href="#">Reply</a>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="comment__text">
+                                        <p style="margin-bottom:10px;">{{ comment.body }}</p>
+                                    </div>
+                                    <div class="row justify-content-center mt-3 mb-5">
+                                        <div class="col-md-5 col-sm-12">
+                                            <hr style="padding: 0; margin: 0 0 10px 0;">
+                                            <div style="margin:0 0 0 20px; padding-top: 0;">
+                                                <h6 style="margin: 0; letter-spacing: 0; text-transform: lowercase;">{{ comment.reply.name }}</h6>
+                                                <p>{{ comment.reply.body }}</p>
+                                            </div>
+                                           
+                                            
+                                           <form name="contactForm" id="contactForm" method="post" action="{{ infos.slug }}" autocomplete="off">
+                                                {% csrf_token %}
+                                                <fieldset>
+                                                    {% if request.user.is_anonymous %}
+                                                        <div class="form-field">
+                                                            <input name="cName" id="cName" class="h-full-width" placeholder="Your Name" value=""
+                                                                type="text">
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="form-field">
+                                                            <input name="cName" id="cName" class="h-full-width" placeholder="Your Name" value="{{ request.user }}"
+                                                                type="hidden">
+                                                        </div>
+                                                    {% endif %}
+                    
+                    
+                                                    <div class="message form-field">
+                                                        <textarea name="cMessage" id="cMessage" class="h-full-width"
+                                                                  placeholder="Your Message"></textarea>
+                                                    </div>
+                                                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                                    <input name="post" value="{{ infos.id }}" type="hidden">
+                                                    <input name="submit" id="submit" class="btn btn--primary btn-wide btn--large h-full-width"
+                                                           value="Reply" type="submit">
+                    
+                                                </fieldset>
+                                            </form> <!-- end form -->   
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                {% else %}
+                                <div class="comment__content">            
+                                    <div class="comment__info">
+                                        <div class="comment__author">{{ comment.name }}</div>
+                                        <div class="comment__meta">
+                                            <div class="comment__time">{{ comment.date_added }}</div>
+                                            <div class="comment__reply">
+                                                <a class="comment-reply-link" href="#">Reply</a>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+
+                                    <div class="comment__text">
+                                        <p>{{ comment.body }}</p>
+                                    </div>
+                                    <div class="row justify-content-center mt-3 mb-5">
+                                        <div class="col-md-5 col-sm-12">
+                                            
+                                           
+                                            
+                                           <form name="contactForm" id="contactForm" method="post" action="{{ infos.slug }}" autocomplete="off">
+                                                {% csrf_token %}
+                                                <fieldset>
+                                                    {% if request.user.is_anonymous %}
+                                                        <div class="form-field">
+                                                            <input name="cName" id="cName" class="h-full-width" placeholder="Your Name" value=""
+                                                                type="text">
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="form-field">
+                                                            <input name="cName" id="cName" class="h-full-width" placeholder="Your Name" value="{{ request.user }}"
+                                                                type="hidden">
+                                                        </div>
+                                                    {% endif %}
+                    
+                    
+                                                    <div class="message form-field">
+                                                        <textarea name="cMessage" id="cMessage" class="h-full-width"
+                                                                  placeholder="Your Message"></textarea>
+                                                    </div>
+                                                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                                    <input name="post" value="{{ infos.id }}" type="hidden">
+                                                    <input name="submit" id="submit" class="btn btn--primary btn-wide btn--large h-full-width"
+                                                           value="Reply" type="submit">
+                    
+                                                </fieldset>
+                                            </form> <!-- end form -->  
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                {% endif %}
+
+                            </li> <!-- end comment level 1 -->
+
+                        </ol>
+                        <!-- END commentlist -->
+                        
+                    {% endfor %}
+                {% endif %}
+ 
+
+            </div> <!-- end col-full -->
+        </div> <!-- end comments -->
+        <div class="row comment-respond">
+
+                    <!-- START respond -->
+                    <div id="respond" class="column">
+
+                        <h3>
+                            Add Comment
+                        </h3>
+
+                        <form name="contactForm" id="contactForm" method="post" action="{{ infos.slug }}" autocomplete="off">
+                            {% csrf_token %}
+                            <fieldset>
+                                {% if request.user.is_anonymous %}
+                                    <div class="form-field">
+                                        <input name="cName" id="cName" class="h-full-width" placeholder="Your Name" value=""
+                                            type="text">
+                                    </div>
+                                {% else %}
+                                    <div class="form-field">
+                                        <input name="cName" id="cName" class="h-full-width" placeholder="Your Name" value="{{ request.user }}"
+                                            type="hidden">
+                                    </div>
+                                {% endif %}
+
+
+                                <div class="message form-field">
+                                    <textarea name="cMessage" id="cMessage" class="h-full-width"
+                                              placeholder="Your Message"></textarea>
+                                </div>
+                                <input name="post" value="{{ infos.id }}" type="hidden">
+                                <input name="submit" id="submit" class="btn btn--primary btn-wide btn--large h-full-width"
+                                       value="Add Comment" type="submit">
+
+                            </fieldset>
+                        </form> <!-- end form -->
+
+                    </div>
+                    <!-- END respond-->
+
+                </div> <!-- end comment-respond -->
+
+
+
+    </div> <!-- end comments-wrap -->
+
+
+</section> <!-- end s-content -->
+{% endblock %}

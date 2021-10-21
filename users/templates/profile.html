@@ -1,0 +1,87 @@
+{% extends 'layouts.html' %} 
+{% load static %}
+{% block header %}
+{% load static %}
+<ul class="s-header__nav">
+  <li><a href="{% url 'home' %}" title="">Home</a></li>
+  <li class="has-children">
+    <a href="#0" title="">Categories</a>
+    <ul class="sub-menu">
+      {% for i in all_categories %}
+      <li>
+        <a href="{% url 'category' i.slug %}"
+          >{{ i.name }} | {{ i.blog_set.all|length }}</a
+        >
+      </li>
+      {% endfor %}
+    </ul>
+  </li>
+  <li><a href="{% url 'about' %}" title="">About</a></li>
+  <li><a href="{% url 'contact' %}" title="">Contact</a></li>
+  {% if request.user.is_anonymous %}
+  <li><a href="{% url 'register' %}" title="">Sign Up</a></li>
+  {% else %}
+  <li><a href="{% url 'my_posts' %}" title="">My Posts</a></li>
+  <li class="has-children">
+    <a href="#0" title="">{{request.user}}</a>
+    <ul class="sub-menu">
+      <li><a href="{% url 'my_profile' %}">My Info</a></li>
+      <li><a href="{% url 'logout' %}">Log Out</a></li>
+    </ul>
+  </li>
+  {% endif %}
+</ul>
+<!-- end header__nav -->
+{% endblock %} 
+{% block content %}
+{% if request.user.profile.first_name and request.user.profile.last_name %}
+<section class="s-content">
+  <div class="row">
+    <div class="column large-12">
+      <section>
+        <div class="s-content__media">
+          {% if request.user.profile.profile_photo %}
+            <img style="border-radius: 50%;" src="{{request.user.profile.profile_photo.url }}" />       
+            <a type="button" class="btn btn-success" href="{% url 'set_photo' %}">Set Photo ✏️</a>
+            {% else %}
+            <img style="border-radius: 50%;" src="{% static '/default-avatar.jpg/' %}" />
+            <a type="button" class="btn btn-success" href="{% url 'set_photo' %}">Set Photo ✏️</a>
+          {% endif %}
+        
+        </div>
+        <!-- end s-content__media -->
+
+        <div class="s-content__primary">
+          <h1 class="s-content__title">{{ request.user }}</h1>
+
+          <p class="lead">
+            {{ request.user.profile.first_name }} {{ request.user.profile.last_name }}
+          </p>
+
+          <p>
+            {{request.user.profile.bio}}
+          </p>
+          Posts: {{ request.user.blog.all|length}}
+          <h1>{{ request.user. }}</h1>
+          <hr />
+
+          <div class="row block-large-1-2 block-tab-full s-content__blocks">
+            <div class="column">
+              <p><a href="{% url 'update_info' %}">Update Info</a></p>
+            </div>
+
+            <div class="column">
+                <p><a href="{% url 'ch_password' %}">Change Password</a></p>
+              </div>
+          </div>
+        </div>
+        <!-- end s-content__primary -->
+      </section>
+    </div>
+    <!-- end column -->
+  </div>
+  <!-- end row -->
+</section>
+<!-- end s-content -->
+{% endif %}
+{% endblock %}

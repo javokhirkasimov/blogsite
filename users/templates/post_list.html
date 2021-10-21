@@ -1,0 +1,98 @@
+{% extends 'layouts.html' %}
+
+{% block header %}
+<ul class="s-header__nav">
+    <li><a href="{% url 'home' %}" title="">Home</a></li>
+    <li class="has-children">
+        <a href="#0" title="">Categories</a>
+        <ul class="sub-menu">
+            {% for i in all_categories %}
+            <li><a href="{% url 'category' i.slug %}">{{ i.name }} | {{ i.blog_set.all|length }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li><a href="{% url 'about' %}" title="">About</a></li>
+    <li><a href="{% url 'contact' %}" title="">Contact</a></li>
+    {% if request.user.is_anonymous %}
+    <li><a href="{% url 'register' %}" title="">Sign Up</a></li>
+    {% else %}
+    <li class="current"><a href="{% url 'my_posts' %}" title="">My Posts</a></li>
+    <li class="has-children">
+        <a href="#0" title="">{{request.user}}</a>
+        <ul class="sub-menu">   
+        <li><a href="{% url 'my_profile' %}">My Info</a></li>
+        <li><a href="{% url 'home' %}">Log Out</a></li>
+        </ul>
+    </li>
+    {% endif %}
+
+</ul> <!-- end header__nav -->
+{% endblock %}
+
+{% block content %}
+    <section class="s-pageheader">
+        <div class="row current-cat">
+            <div class="column">
+                <h1 class="h2">My Posts</h1>
+            </div>
+        </div>
+    </section>
+    <section class="s-pageheader">
+        <div class="row current-cat">
+            <div class="column">
+                <a href="{% url 'create_post' %}" type="button" class="btn btn-default">Add New Post</a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- masonry
+    ================================================== -->
+
+    <section class="s-bricks with-top-sep">
+
+        <div class="masonry">
+
+            <!-- brick-wrapper -->
+            <div class="bricks-wrapper h-group">
+
+                <div class="grid-sizer"></div>
+            {% if posts %}
+            {% for i in posts %}
+                <article class="brick entry format-standard animate-this">
+
+                    <div class="entry__thumb">
+                        <a href="{% url 'detail' i.slug %}" class="thumb-link">
+                            <img src="{{ i.image.url }}" alt="">
+                        </a>
+                    </div> <!-- end entry__thumb -->
+
+                    <div class="entry__text">
+                        <div class="entry__header">
+
+                            <div class="entry__meta">
+                                <span class="entry__cat-links">
+                                    {{ i.category }}
+                                </span>
+                            </div>
+
+                            <h1 class="entry__title"><a href="{% url 'detail' i.slug %}">{{ i.title }}</a></h1>
+
+                        </div>
+                        <div class="entry__excerpt">
+                            <p>{{ i.description | truncatewords:50 }}</p>
+                        </div>
+                    </div> <!-- end entry__text -->
+
+                </article> <!-- end entry -->
+            {% endfor %}
+            </div> <!-- end brick-wrapper -->
+            {% else %}
+            <h1>No Posts Yet...</h1>
+            {% endif %}
+        </div> <!-- end masonry -->
+
+
+    </section> <!-- end s-bricks -->
+
+{% endblock%}

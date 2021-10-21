@@ -1,0 +1,52 @@
+{% extends 'layouts.html' %}
+
+{% block content %}
+
+
+    <!-- masonry
+    ================================================== -->
+
+    <section class="s-bricks with-top-sep">
+
+        <div class="masonry">
+
+            <!-- brick-wrapper -->
+            <div class="bricks-wrapper h-group">
+
+                <div class="grid-sizer"></div>
+            {% for i in info %}
+                <article class="brick entry format-standard animate-this">
+
+                    <div class="entry__thumb">
+                        <a href="{% url 'detail' i.slug %}" class="thumb-link">
+                            <img src="{{ i.image.url }}" alt="">
+                        </a>
+                    </div> <!-- end entry__thumb -->
+
+                    <div class="entry__text">
+                        <div class="entry__header">
+
+                            <div class="entry__meta">
+                                <span class="entry__cat-links">
+                                    {{ i.category }}
+                                </span>
+                            </div>
+
+                            <h1 class="entry__title"><a href="{% url 'detail' i.slug %}">{{ i.title }}</a></h1>
+
+                        </div>
+                        <div class="entry__excerpt">
+                            <p>{{ i.description | truncatewords:50 }}</p>
+                        </div>
+                    </div> <!-- end entry__text -->
+
+                </article> <!-- end entry -->
+            {% endfor %}
+            </div> <!-- end brick-wrapper -->
+
+        </div> <!-- end masonry -->
+
+
+    </section> <!-- end s-bricks -->
+
+{% endblock%}
