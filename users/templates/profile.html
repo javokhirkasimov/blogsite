@@ -61,8 +61,7 @@
           <p>
             {{request.user.profile.bio}}
           </p>
-          Posts: {{ request.user.blog.all|length}}
-          <h1>{{ request.user. }}</h1>
+          Posts: {{ request.user.blog_set.all | length }}
           <hr />
 
           <div class="row block-large-1-2 block-tab-full s-content__blocks">
